@@ -1,5 +1,5 @@
 # Ex.No: 03   COMPUTE THE AUTO FUNCTION(ACF)
-Date: 
+Date: 02/05/2026
 
 ### AIM:
 To Compute the AutoCorrelation Function (ACF) of the data for the first 35 lags to determine the model
@@ -11,33 +11,56 @@ type to fit the data.
 4. Store the results in an array
 5. Represent the result in graphical representation as given below.
 ### PROGRAM:
+```
+import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
-import numpy as np
+df = pd.read_csv("Walmart_sales.csv")
 
-data = [3, 16, 156, 47, 246, 176, 233, 140, 130,
-101, 166, 201, 200, 116, 118, 247,
-209, 52, 153, 232, 128, 27, 192, 168, 208,
-187, 228, 86, 30, 151, 18, 254,
-76, 112, 67, 244, 179, 150, 89, 49, 83, 147, 90,
-33, 6, 158, 80, 35, 186, 127]
+print(df.columns)
 
-lags = range(35)
+data = df['Fuel_Price']
 
+data = data.astype(str)                     
+data = data.str.replace(',', '')              
+data = data.str.replace('$', '')           
+data = pd.to_numeric(data, errors='coerce')
+data = data.dropna().values
 
-#Pre-allocate autocorrelation table
+max_lag = 35
+lags = range(max_lag)
 
-#Mean
+mean = np.mean(data)
+variance = np.var(data)
 
-#Variance
+normalized_data = data - mean
 
-#Normalized data
+acf_values = []
 
-#Go through lag components one-by-one
+for lag in lags:
+    numerator = 0
+    denominator = 0
+    
+    for i in range(len(data) - lag):
+        numerator += normalized_data[i] * normalized_data[i + lag]
+    
+    for i in range(len(data)):
+        denominator += normalized_data[i] ** 2
+    
+    acf = numerator / denominator
+    acf_values.append(acf)
 
-#display the graph
-
+plt.figure(figsize=(10, 5))
+plt.stem(lags, acf_values)
+plt.xlabel('Lag')
+plt.ylabel('Autocorrelation')
+plt.title('ACF of Walmart Sales')
+plt.grid(True)
+plt.show()
+```
 ### OUTPUT:
+<img width="1006" height="612" alt="image" src="https://github.com/user-attachments/assets/fb15b5b2-bbbe-48f8-adcf-fdbe656d8f0e" />
 
 ### RESULT:
         Thus we have successfully implemented the auto correlation function in python.
